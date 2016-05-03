@@ -1,0 +1,6 @@
+#to upload hex file to arduino from RPI
+avrdude -v -v -v -v -patmega328 -carduino -P/dev/ttyACM0 -b11520 -D -Uflash:w:flash.hex:i
+
+#rsync alway handy
+rsync -avzhe ssh workspace/featureExtractor  pi@rpi.local:/home/pi/code
+
