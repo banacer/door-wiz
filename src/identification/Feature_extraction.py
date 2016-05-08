@@ -1,3 +1,7 @@
+'''
+This module converts a "walking through the door" event to a row
+with a set of features such as avg, min, max height, width, girth...
+'''
 import numpy as np
 import pandas as pd
 from pandas import Series,DataFrame
@@ -8,7 +12,17 @@ MAX_WIDTH = 142
 SPEED = 3
 SAMPLING_RATE = 15
 
-def convert_file_to_data_frame(filename,id):
+def convert_file_to_data_frame(filename, id):
+    '''
+    This function takes a file in the form
+    UR=<>
+    UL=<>
+    UT=<>
+    and converts it to a numpy array
+    :param filename: the path to the file
+    :param id: the user identifier
+    :return: a numpy array of the event
+    '''
     my_file = open(filename,'r')
     lines = my_file.readlines()
     dict = {}
@@ -32,6 +46,7 @@ def convert_file_to_data_frame(filename,id):
     frame = DataFrame(data,columns=['height','width'])
     frame['id'] = id
     return frame
+
 def get_frame(path):
     #path = '../../data/'
     result = []
@@ -43,37 +58,37 @@ def get_frame(path):
     return frame
 
 
-def getAvgHeight(data):
+def get_avg_height(data):
     try:
         return np.mean(data[0<data[:,0],0])
     except ValueError:
         return 0
 
-def getMaxHeight(data):
+def get_max_height(data):
     try:
         return np.max(data[0<data[:,0],0])
     except ValueError:
         return 0
 
-def getAvgWidth(data):
+def get_avg_width(data):
     try:
         return np.mean(data[0<data[:,1],1])
     except ValueError:
         return 0
 
-def getMaxWidth(data):
+def get_max_width(data):
     try:
         return np.max(data[0<data[:,1],1])
     except ValueError:
         return 0
 
-def getcircumference(data,sampling_rate):
+def get_circumference(data, sampling_rate):
     try:
         beg = data[0,1]
         side = 0
         size = data[:,1].size
         previous_point = np.array([0,0])
-        my_distance = timeToDistance(sampling_rate)
+        my_distance = time_to_distance(sampling_rate)
         for i in range(1,size - 1):
             if data[i,1] < 0:
                 continue
@@ -93,7 +108,7 @@ def getcircumference(data,sampling_rate):
     except ValueError:
         return 0
 
-def timeToDistance(sampling_rate):
+def time_to_distance(sampling_rate):
     try:
         distancePerMillisecond = float(SPEED) * 100000 / (3600 * 1000)
         distance = 1000/sampling_rate * distancePerMillisecond
@@ -107,4 +122,4 @@ res = frame[(frame['height'] > 1) & (frame['id'] == 1) & (frame['width'] > 10)]
 res['index'] = res.index
 res['delta'] = (res['index']-res['index'].shift()).fillna(0)
 for row in res.iterrows():
-    print row['delta'].
+    print row['delta']
