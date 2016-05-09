@@ -5,3 +5,5 @@ scikit-learn
 pyserial
 cv2
 flask
+matplotlib
+pika
