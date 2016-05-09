@@ -1,3 +1,3 @@
-from src.identification import ml
+import ml
 
 __all__ = [ml]

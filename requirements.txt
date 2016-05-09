@@ -1,5 +1,7 @@
 numpy
+scipy
 pandas
 scikit-learn
 pyserial
-
+cv2
+flask
