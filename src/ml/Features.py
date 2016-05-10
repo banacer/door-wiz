@@ -137,3 +137,13 @@ def extract_time(data, sampling_rate):
             return np.nan
     except ValueError:
         return np.nan
+def extract_all(data,sampling_rate,speed):
+    line = []
+    line.append(extract_mean_height(data))
+    line.extend(extract_min_max_height(data))
+    line.append(extract_mean_width(data))
+    line.extend(extract_min_max_width(data))
+    line.append(extract_time(data, sampling_rate=sampling_rate, speed=speed))
+    line.append(extract_girth(data, sampling_rate, speed))
+    line.append(data['id'].iloc[0])
+    return line

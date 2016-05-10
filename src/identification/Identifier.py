@@ -16,16 +16,24 @@ import json
 import ml.Features as ft
 from utils import Utils
 
-def subscribe(ch, method, properties, body):
-    """
-    prints the body message. It's the default callback method
-    :param ch: keep null
-    :param method: keep null
-    :param properties: keep null
-    :param body: the message
-    :return:
-    """
-    pass
+class Identifier(object):
+
+    def __init__(self):
+        columns = ['mean_height', 'min_height', 'max_height', 'mean_width', 'min_width', 'max_width', 'time', 'girth','id']
+        self.data = DataFrame(columns=columns)
+        self.event = []
+    @staticmethod
+    def subscribe(ch, method, properties, body):
+        """
+        prints the body message. It's the default callback method
+        :param ch: keep null
+        :param method: keep null
+        :param properties: keep null
+        :param body: the message
+        :return:
+        """
+
+
 
 
 if __name__ == '__main__':
