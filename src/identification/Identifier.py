@@ -32,8 +32,11 @@ class Identifier(object):
         :param body: the message
         :return:
         """
+        #first we get the JSON from body
 
+        #we check if it's part of the walking event
 
+        #if walking event is completed, we 
 
 
 if __name__ == '__main__':
