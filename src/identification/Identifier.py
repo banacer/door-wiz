@@ -36,7 +36,7 @@ class Identifier(object):
 
         #we check if it's part of the walking event
 
-        #if walking event is completed, we 
+        #if walking event is completed, we
 
 
 if __name__ == '__main__':
