@@ -47,7 +47,6 @@ void loop()
     Serial.print(data[1]);
     Serial.print(",");
     Serial.println(data[2]);
-
   }
   inc = inc % 3;
 

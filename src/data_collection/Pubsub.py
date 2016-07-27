@@ -28,8 +28,10 @@ def print_sensor_data(ch, method, properties, body):
     :param body: the message
     :return:
     """
-    data = json.load(body)
-    print data["UT"], data["UL"], data["UR"]
+    data = json.loads(body)
+    print data["UT"], 215.65
+    print data["UL"], 117.34
+    print data["UR"].rstrip('\n\r'), 114.78
 
 def print_distance_data(ch, method, properties, body):
     """
