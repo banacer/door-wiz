@@ -1,11 +1,13 @@
 #define maxlen 50
 
-int pingPin[3] = {
-  3, 5, 7}; //{T,R,L}
-short inc = 0, Pin;
-short count = 0, idx = 0;
-
-unsigned long data[3];
+int pingPin[3] = {3, 5, 7}; //{T,R,L}
+int max_timeout[3] = {12000, 6500, 6500}; //{T,R,L}
+int data[3];
+short inc = 0;
+short Pin = 0;
+short count = 0;
+short idx = 0;
+short sleep_left = 0;
 int i = 0;
 
 int statusLed = 11;
@@ -37,10 +39,15 @@ void setup()
 void loop()
 {
   Pin = pingPin[inc];
-  getDuration();	
+  getDuration();
   data[inc] = duration;
+  sleep_left = (max_timeout[inc] - duration)/1000;
+  //data[inc] = sleep_left;
+  if(inc == 1)
+    sleep_left += 3;
+  if(sleep_left >= 0)
+    delay(sleep_left);
   inc++;
-  //delay(3);
   if( inc == 3) {
     Serial.print(data[0]);
     Serial.print(",");
