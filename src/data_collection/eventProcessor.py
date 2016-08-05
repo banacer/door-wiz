@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from pandas import DataFrame, Series
 import json
@@ -28,8 +29,16 @@ class EventProcessor(object):
         walking_dict = json.loads(body)
         self.save_to_db(walking_dict)
         data = DataFrame(walking_dict)
+        #data = self.clean_data(data)
         features = self.extract_features(data)
         print features
+
+    @staticmethod
+    def clean_data(data):
+        data[data < 5] = np.nan
+        data.dropna(how='all')
+        data.interpolate(method='spline',order=5) # will have to see what order number is best. Just picked 4 by default
+        return data
 
 def run(mongo_ip, mongo_port, walking_raw):
         eventProcessor = EventProcessor(mongo_ip, mongo_port, walking_raw)
