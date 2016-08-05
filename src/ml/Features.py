@@ -151,7 +151,7 @@ def extract_all(data,sampling_rate,speed):
     line['min height'], line['max height'] = extract_min_max_height(data)
     line['mean width'] = extract_mean_width(data)
     line['min width'], line['max width'] = extract_min_max_width(data)
-    line['time'] = extract_time(data, sampling_rate=sampling_rate, speed=speed)
+    line['time'] = extract_time(data, sampling_rate=sampling_rate)
     line['girth'] = extract_girth(data, sampling_rate, speed)
     #line['']line.append(data['id'].iloc[0])
     return line
