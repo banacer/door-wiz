@@ -20,7 +20,7 @@ class EventDetector(object):
             self.walk['height'].append(height)
             self.walk['width'].append(width)
         else:
-            if self.current_errors < self.max_consecutive_errors:
+            if self.is_start and self.current_errors < self.max_consecutive_errors:
                 self.walk['height'].append(height)
                 self.walk['width'].append(width)
                 self.current_errors += 1
