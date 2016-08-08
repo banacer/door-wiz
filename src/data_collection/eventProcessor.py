@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 import pandas as pd
 from pandas import DataFrame, Series
@@ -26,26 +27,53 @@ class EventProcessor(object):
         return features
 
     def process_walking_event(self, ch, method, properties, body):
+        try:
+            walking_dict = json.loads(body)
+            self.save_to_db(walking_dict)
+            data = DataFrame(walking_dict)
+            data = self.clean_data(data)
+            features = self.extract_features(data)
+            print features
+        except Exception as e:
+            print e
+
+    def save_to_mongo(self, ch, method, properties, body):
         walking_dict = json.loads(body)
         self.save_to_db(walking_dict)
-        data = DataFrame(walking_dict)
-        #data = self.clean_data(data)
-        features = self.extract_features(data)
-        print features
+
 
     @staticmethod
     def clean_data(data):
         data[data < 5] = np.nan
-        data.dropna(how='all')
-        data.interpolate(method='spline',order=5) # will have to see what order number is best. Just picked 4 by default
+        data = data.dropna(how='all')
+        data = data.interpolate(method='polynomial',order=3, limit_direction='both',limit=4) # will have to see what order number is best. Just picked 4 by default
+        #print data
         return data
 
 def run(mongo_ip, mongo_port, walking_raw):
         eventProcessor = EventProcessor(mongo_ip, mongo_port, walking_raw)
         sub('door', eventProcessor.process_walking_event)
 
+def compute_matrix_addition(m1, m2):
+    if len(m1) == len(m2): #check same number of rows
+        if len(m1[0]) == len(m2[0]): # check same number of columns
+            res = []
+            rows = len(m1)
+            cols = len(m1[0])
+            for i in range(rows):
+                res.append([])
+                for j in range(cols):
+                    res[i].append(m1[i][j] + m2[i][j])
+            return res
+    return None
 if __name__ == '__main__':
-    mongo_ip = '172.26.56.122'
-    mongo_port = 27017
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('ip', help="The IP address of MongoDB",default='172.26.56.122', type=str)
+    # parser.add_argument('port', help="The port number of MongoDB", default=27017, type=str)
+    # parser.add_argument('function', help='"process", "save" or "both"', default='process',type=str)
+    # args = parser.parse_args()
+    mongo_ip = '172.26.56.122' #parser.ip
+    mongo_port = 27017 #parser.port
     walking_raw = 'walking_raw'
     run(mongo_ip, mongo_port, walking_raw)
+
