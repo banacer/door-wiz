@@ -32,7 +32,7 @@ def run(port, max_height, max_width, calibration):
             height = max_height - ut
             if not (ul > 120 and ur > 120):
                 width = max_width - ul - ur
-            detector.get_reading(height, width)
+            detector.get_reading(height, width, rate)
             print '{:5.2f} {:5.2f} {:5.2f} {:5.2f} {:4.2f}'.format(height, ul, ur, width, rate)
             prev = now
         except Exception as e:
