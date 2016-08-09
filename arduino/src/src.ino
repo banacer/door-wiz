@@ -1,7 +1,8 @@
 #define maxlen 50
 
 int pingPin[3] = {3, 5, 7}; //{T,R,L}
-int max_timeout[3] = {12000, 6500, 6500}; //{T,R,L}
+int max_timeout[3] = {6000, 3250, 3250}; //{T,R,L}
+int timeout;
 int data[3];
 short inc = 0;
 short Pin = 0;
@@ -27,18 +28,20 @@ void getDuration()
   digitalWrite(Pin, LOW);
 
   pinMode(Pin, INPUT);
-  duration = pulseIn(Pin, HIGH,15000);
-
+  duration = pulseIn(Pin, HIGH,timeout);
+  if(duration == 0)
+    duration = timeout;
 }
 
 void setup()
 {
-  Serial.begin(9600);	
+  Serial.begin(9600);
 }
 
 void loop()
 {
   Pin = pingPin[inc];
+  timeout = max_timeout[inc];
   getDuration();
   data[inc] = duration;
   sleep_left = (max_timeout[inc] - duration)/1000;
@@ -58,4 +61,3 @@ void loop()
   inc = inc % 3;
 
 }
-
