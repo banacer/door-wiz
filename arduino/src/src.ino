@@ -62,7 +62,7 @@ void loop()
     Serial.print(data[1]);
     Serial.print(",");
     Serial.print(data[2]);
-    if(temp_count == 18000) {
+    if(temp_count == 18000) { //This is for sending temperature every 5 minutes given avg sampling rate
 	temp_count = 0;
     	float f = dht.readTemperature(true);
 	Serial.print(",");
