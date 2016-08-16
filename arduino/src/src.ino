@@ -1,5 +1,8 @@
 #define maxlen 50
-
+#include "DHT.h"
+#define DHTPIN 2
+#define DHTTYPE DHT22
+DHT dht(DHTPIN, DHTTYPE);
 int pingPin[3] = {3, 5, 7}; //{T,R,L}
 int max_timeout[3] = {6000, 3250, 3250}; //{T,R,L}
 int timeout;
@@ -10,7 +13,7 @@ short count = 0;
 short idx = 0;
 short sleep_left = 0;
 int i = 0;
-
+int temp_count = 0;
 int statusLed = 11;
 int errorLed = 12;
 
@@ -36,10 +39,12 @@ void getDuration()
 void setup()
 {
   Serial.begin(9600);
+  dht.begin();
 }
 
 void loop()
 {
+  temp_count++;
   Pin = pingPin[inc];
   timeout = max_timeout[inc];
   getDuration();
@@ -56,7 +61,19 @@ void loop()
     Serial.print(",");
     Serial.print(data[1]);
     Serial.print(",");
-    Serial.println(data[2]);
+    Serial.print(data[2]);
+    if(temp_count == 18000) {
+	temp_count = 0;
+    	float f = dht.readTemperature(true);
+	Serial.print(",");
+    	if(isnan(f))
+	    Serial.println("Error in DHT");
+    	else
+            Serial.println(f);
+    }
+    else
+	Serial.println("");
+
   }
   inc = inc % 3;
 
