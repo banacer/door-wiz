@@ -10,7 +10,7 @@ If also detects a walking event and passes the event to the next node
 def run(port, max_height, max_width, calibration):
     ser = Serial(port, 9600)
     prev = time()
-    detector = EventDetector(150,200,4)
+    detector = EventDetector(130,200,4)
     while True:
         try:
             line = ser.readline().rstrip('\n\r')
@@ -32,7 +32,7 @@ def run(port, max_height, max_width, calibration):
             height = max_height - ut
             if not (ul > 120 and ur > 120):
                 width = max_width - ul - ur
-            detector.get_reading(height, width, rate)
+            detector.get_reading(height, width, rate, ut, ul, ur)
             print '{:5.2f} {:5.2f} {:5.2f} {:5.2f} {:4.2f}'.format(height, ul, ur, width, rate)
             prev = now
         except Exception as e:

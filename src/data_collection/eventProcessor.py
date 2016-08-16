@@ -21,7 +21,7 @@ class EventProcessor(object):
         return walk_id
 
     def extract_features(self, data):
-        sampling_rate = 33
+        sampling_rate = 60
         default_speed = 5
         features = extractor.extract_all(data, sampling_rate, default_speed)
         return features
