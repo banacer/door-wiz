@@ -2,6 +2,8 @@ import argparse
 from serial import Serial
 from time import time
 from eventdetector import EventDetector
+from Pubsub import pub
+import json
 '''
 This module runs on Raspberry PI. It reads from the serial the sensor data that are transformed to distance, calibrated.
 If also detects a walking event and passes the event to the next node
@@ -16,7 +18,7 @@ def run(port, max_height, max_width, calibration):
             line = ser.readline().rstrip('\n\r')
             data = line.split(',')
 
-            if len(data) != 3:
+            if len(data) not in [3,4]: # sometimes temperature is sent which makes it 4
                 continue
             for i in range(3):
                 try:
@@ -24,6 +26,12 @@ def run(port, max_height, max_width, calibration):
                 except ValueError:
                     continue
             now = time()
+            if len(data) ==  4: # we will push temperature to rabbitmq
+                try:
+                    temp_dict = {'temp': float(data[3]), 'time': now}
+                    pub('temperature',json.dumps(temp_dict))
+                except ValueError as e:
+                    print e
             rate = 1 / (now - prev)
             ut = data[0]
             ul = data[1]
