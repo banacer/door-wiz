@@ -49,12 +49,12 @@ void loop()
   timeout = max_timeout[inc];
   getDuration();
   data[inc] = duration;
-  sleep_left = (max_timeout[inc] - duration)/1000;
+  sleep_left = max_timeout[inc] - duration;
   //data[inc] = sleep_left;
   if(inc == 1)
     sleep_left += 3;
   if(sleep_left >= 0)
-    delay(sleep_left);
+    delayMicroseconds(sleep_left);
   inc++;
   if( inc == 3) {
     Serial.print(data[0]);

@@ -9,10 +9,10 @@ This module runs on Raspberry PI. It reads from the serial the sensor data that 
 If also detects a walking event and passes the event to the next node
 '''
 
-def run(port, max_height, max_width, calibration):
+def run(port, max_height, max_width, calibration, door):
     ser = Serial(port, 9600)
     prev = time()
-    detector = EventDetector(130,200,4)
+    detector = EventDetector(130,200,4, door)
     while True:
         try:
             line = ser.readline().rstrip('\n\r')
@@ -41,16 +41,20 @@ def run(port, max_height, max_width, calibration):
             if not (ul > 120 and ur > 120):
                 width = max_width - ul - ur
             detector.get_reading(height, width, rate, ut, ul, ur)
-            print '{:5.2f} {:5.2f} {:5.2f} {:5.2f} {:4.2f}'.format(height, ul, ur, width, rate)
+            #print '{:5.2f} {:5.2f} {:5.2f} {:5.2f} {:4.2f}'.format(height, ul, ur, width, rate)
             prev = now
         except Exception as e:
             print e
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-rip', '--rabbitip', help="The IP address of RabbitMQ server", type=str)
-    parser.add_argument('-rp', '--rabbitport', help="The PORT of RabbitMQ server", type=int)
+    parser.add_argument('-i', '--rabbitip', help="The IP address of RabbitMQ server", type=str, default='172.26.56.122')
+    parser.add_argument('-p', '--rabbitport', help="The PORT of RabbitMQ server", type=int, default=5672)
+    parser.add_argument('-x','--exchange',help='The exchange name of RabbitMQ server')
+    args = parser.parse_args()
+    door = args.exchange
+    print 'door', door
     calibration = .01877037
     max_height = 223
     max_width = 123
-    run(port='/dev/ttyACM0', max_height=max_height, max_width=max_width, calibration=calibration)
+    run(port='/dev/ttyACM0', max_height=max_height, max_width=max_width, calibration=calibration, door=door)

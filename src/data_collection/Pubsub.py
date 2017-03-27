@@ -1,8 +1,7 @@
 import pika
 import logging
-import sys
 import json
-import pandas as pd
+
 
 __host = '172.26.56.122'
 __port = 5672

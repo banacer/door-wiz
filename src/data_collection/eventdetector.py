@@ -1,11 +1,10 @@
 import numpy as np
-import pandas as pd
 import Pubsub as p
 from json import dumps
 from time import time
 class EventDetector(object):
 
-    def __init__(self, min_height, max_height,max_consecutive_errors):
+    def __init__(self, min_height, max_height,max_consecutive_errors, door):
         self.walk = {'height':[], 'width':[]}
         self.data = {'ut':[], 'ul':[], 'ur':[]}
         self.min_height = min_height
@@ -14,6 +13,8 @@ class EventDetector(object):
         self.current_errors = 0
         self.is_start = False
         self.sum_sampling_rate = 0
+        self.door = door
+        self.exchange = 'door'
 
     def get_reading(self, height, width, sampling_rate, ut, ul, ur):
         if height > self.min_height and height < self.max_height:
@@ -41,13 +42,14 @@ class EventDetector(object):
     def finalize_walking_event(self):
         self.current_errors = 0
         self.is_start = False
-        print 'sending frame!'
+        #print 'sending frame!'
         data = {}
+        data['door'] = self.door
         data['time'] = time()
         data['sampling_rate'] = self.sum_sampling_rate / len(self.walk.keys())
         data['walk'] = self.walk
         data['raw'] = self.data
-        p.pub('door', dumps(data))
+        p.pub(self.exchange, dumps(data))
         self.walk['height'] = []
         self.walk['width'] = []
         self.data['ut'] = []
