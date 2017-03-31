@@ -18,23 +18,22 @@ class BrokerConnection(sockjs.tornado.SockJSConnection):
         self.walk_exchange = 'door'
         self.host = '172.26.56.122'
         logging.debug('Events: Connecting to RabbitMQ:')
-        self.connection = pika.TornadoConnection(pika.ConnectionParameters(host=self.host), on_open_callback = self.on_connected)
+        self.connection = pika.TornadoConnection(pika.ConnectionParameters(host=self.host),
+                                                 on_open_callback=self.on_connected)
 
     def on_connected(self, unused_connection):
         logging.debug("Events: Opening a channel")
         self.channel = self.connection.channel(on_open_callback=self.on_channel_open)
 
-    def on_channel_open(self,channel):
-        #logging.debug("Events: Declaring the %s queue" %  self.queue)
+    def on_channel_open(self, channel):
         self.channel.exchange_declare(exchange=self.health_exchange, type='fanout')
         result = self.channel.queue_declare(self.on_hdeclareok, exclusive=True)
-        print "result is ", result
 
         self.channel.exchange_declare(exchange=self.walk_exchange, type='fanout')
         result = self.channel.queue_declare(self.on_wdeclareok, exclusive=True)
         # We should be connected if we made it this far
-
         self.connected = True
+
     def on_hdeclareok(self, result):
         self.health_queue = result.method.queue
         self.channel.queue_bind(self.on_hbindok, exchange=self.health_exchange, queue=self.health_queue)
@@ -57,20 +56,23 @@ class BrokerConnection(sockjs.tornado.SockJSConnection):
 
     def on_health(self, unused_channel, basic_deliver, properties, body):
         for c in self.clients:
-                msg_received = json.loads(body)
-                msg_received['type'] = 'health'
-                msg_to_send = json.dumps(msg_received)
-                c.send(msg_to_send)
+            msg_received = json.loads(body)
+            msg_received['type'] = 'health'
+            msg_to_send = json.dumps(msg_received)
+            c.send(msg_to_send)
+
     def on_walk(self, unused_channel, basic_deliver, properties, body):
         for c in self.clients:
-                msg_received = json.loads(body)
-                msg_received['type'] = 'walk'
-                msg_to_send = json.dumps(msg_received)
-                c.send(msg_to_send)
+            msg_received = json.loads(body)
+            msg_received['type'] = 'walk'
+            msg_to_send = json.dumps(msg_received)
+            c.send(msg_to_send)
+
 
 if __name__ == "__main__":
     import logging
-    logging.getLogger().setLevel(logging.DEBUG)
+
+    logging.getLogger().setLevel(logging.INFO)
 
     # Initialize sockjs-tornado and start IOLoop
     BrokerRouter = sockjs.tornado.SockJSRouter(BrokerConnection, '/push')
