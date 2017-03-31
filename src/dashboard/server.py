@@ -23,26 +23,31 @@ class BrokerConnection(sockjs.tornado.SockJSConnection):
     def on_connected(self, unused_connection):
         logging.debug("Events: Opening a channel")
         self.channel = self.connection.channel(on_open_callback=self.on_channel_open)
-        #self.channel = self.connection.channel()
 
     def on_channel_open(self,channel):
         #logging.debug("Events: Declaring the %s queue" %  self.queue)
         self.channel.exchange_declare(exchange=self.health_exchange, type='fanout')
-        #result = self.channel.exchange_declare()
-        result = self.channel.queue_declare(exclusive=True)
+        result = self.channel.queue_declare(self.on_hdeclareok, exclusive=True)
         print "result is ", result
-        health_queue = result.method.queue
-        channel.queue_bind(exchange=self.health_exchange, queue=health_queue)
-        self.channel.basic_consume(self.on_health, queue = health_queue, no_ack = True)
 
-        self.channel.exchange_declare(exchange=self.health_exchange, type='fanout')
-        result = self.channel.queue_declare(exclusive=True)
-        walk_queue = result.method.queue
-        channel.queue_bind(exchange=self.walk_exchange, queue=walk_queue)
-        self.channel.basic_consume(self.on_walk, queue = self.walk_queue, no_ack = True)
-
+        self.channel.exchange_declare(exchange=self.walk_exchange, type='fanout')
+        result = self.channel.queue_declare(self.on_wdeclareok, exclusive=True)
         # We should be connected if we made it this far
+
         self.connected = True
+    def on_hdeclareok(self, result):
+        self.health_queue = result.method.queue
+        self.channel.queue_bind(self.on_hbindok, exchange=self.health_exchange, queue=self.health_queue)
+
+    def on_wdeclareok(self, result):
+        self.walk_queue = result.method.queue
+        self.channel.queue_bind(self.on_wbindok, exchange=self.walk_exchange, queue=self.walk_queue)
+
+    def on_hbindok(self, frame):
+        self.channel.basic_consume(self.on_health, queue=self.health_queue, no_ack=True)
+
+    def on_wbindok(self, frame):
+        self.channel.basic_consume(self.on_walk, queue=self.walk_queue, no_ack=True)
 
     def on_message(self, message):
         logging.debug('Received something from client: %s', message)
