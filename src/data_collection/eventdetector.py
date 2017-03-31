@@ -1,4 +1,3 @@
-import numpy as np
 import Pubsub as p
 from json import dumps
 from time import time
