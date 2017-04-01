@@ -4,9 +4,10 @@ This file contains a set of utilities function needed by other modules
 import numpy as np
 import pandas as pd
 from pandas import DataFrame, Series
-
+from pymongo import MongoClient
 import pika
 import sys
+import json
 
 
 def convert_file_to_data_frame(filename, id, MAX_HEIGHT, MAX_WIDTH):
@@ -94,3 +95,32 @@ def pub(queue_name, message, host='172.26.50.120'):
     channel.basic_publish(exchange='', routing_key=queue_name, body=message)
     print" [x] Sent %s" % message
     connection.close()
+
+
+def init_mongo_client(mongo_ip, mongo_port):
+    '''
+    returns client connection to mongodb "local" database
+    :param mongo_ip: mongodb ip address
+    :param mongo_port:mongodb port
+    :return: database connection object
+    '''
+    client = MongoClient(mongo_ip, mongo_port)
+    db = client.local
+    return db
+
+
+class MongoSaver(object):
+    def __init__(self, db, collection_name):
+        self.db = db
+        self.collection_name = collection_name
+
+    def save_to_mongo(self, ch, method, properties, body):
+        '''
+
+        :param db: mongodb db connection
+        :param collection_name: collection name
+        :param data: data to be stored
+        :return: id of document.
+        '''
+        id = self.db[self.collection_name].insert(json.loads(body))
+        return id

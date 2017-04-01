@@ -137,13 +137,21 @@ def extract_time(data, sampling_rate):
             return np.nan
     except ValueError:
         return np.nan
+
 def extract_all(data,sampling_rate,speed):
-    line = []
-    line.append(extract_mean_height(data))
-    line.extend(extract_min_max_height(data))
-    line.append(extract_mean_width(data))
-    line.extend(extract_min_max_width(data))
-    line.append(extract_time(data, sampling_rate=sampling_rate, speed=speed))
-    line.append(extract_girth(data, sampling_rate, speed))
-    line.append(data['id'].iloc[0])
+    """
+    returns all features in one dict structure
+    :param data: DataFrame with height width
+    :param sampling_rate:
+    :param speed:
+    :return: dict with all data
+    """
+    line = {}
+    line['mean height'] = extract_mean_height(data)
+    line['min height'], line['max height'] = extract_min_max_height(data)
+    line['mean width'] = extract_mean_width(data)
+    line['min width'], line['max width'] = extract_min_max_width(data)
+    line['time'] = extract_time(data, sampling_rate=sampling_rate)
+    line['girth'] = extract_girth(data, sampling_rate, speed)
+    #line['']line.append(data['id'].iloc[0])
     return line
