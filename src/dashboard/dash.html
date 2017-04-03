@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table>
+  <tr>
+    <th><h1>Door Number          <h1></th>
+    <th><h1>Last Heartbeat        <h1></th>
+    <th><h1>Last Walking Event<h1></th>
+  </tr>
+  <tr>
+    <td><h1>RPI 1<h1></td>
+    <td><h2 id=rpi1_h>yes<h2></td>
+    <td><h2 id=rpi1_w>yo!<h2></td>
+  </tr>
+  <td><h1>RPI 5<h1></td>
+    <td><h2 id=rpi5_h>yes<h2></td>
+    <td><h2 id=rpi5_w>yo!<h2></td>
+  </tr>
+</table>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs.min.js"></script>
+  <script>
+    $(function() {
+      var conn = new SockJS('http://172.26.56.122:9091/push');
+      conn.onmessage = function(e) {
+        console.log('Got', e.data);
+        var json = JSON.stringify(eval("(" + e.data+ ")"));
+        id = json.type
+        document.getElementById(id).innerHTML = json.data
+      }
+    });
+</script>
+</body>
+</html>
