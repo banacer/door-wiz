@@ -5,6 +5,7 @@ import tornado.web
 import sockjs.tornado
 import pika
 from pika import adapters
+import datetime
 import json
 
 
@@ -57,8 +58,10 @@ class BrokerConnection(sockjs.tornado.SockJSConnection):
     def on_health(self, unused_channel, basic_deliver, properties, body):
         for c in self.clients:
             msg_received = json.loads(body)
-            msg_received['type'] = 'health'
+            msg_received['type'] = msg_received['name']+'_h'
+            msg_received['data'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             msg_to_send = json.dumps(msg_received)
+            print 'sending', msg_to_send
             c.send(msg_to_send)
 
     def on_walk(self, unused_channel, basic_deliver, properties, body):
@@ -74,7 +77,6 @@ if __name__ == "__main__":
 
     logging.getLogger().setLevel(logging.INFO)
 
-    # Initialize sockjs-tornado and start IOLoop
     BrokerRouter = sockjs.tornado.SockJSRouter(BrokerConnection, '/push')
 
     app = tornado.web.Application(BrokerRouter.urls)
