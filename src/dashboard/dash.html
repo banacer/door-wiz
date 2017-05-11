@@ -5,13 +5,13 @@
     <title>Title</title>
 </head>
 <body>
-<table>
-  <tr>
+<table class="table">
+  <tr scope="row">
     <th><h1>Door Number          <h1></th>
     <th><h1>Last Heartbeat        <h1></th>
     <th><h1>Last Walking Event<h1></th>
   </tr>
-  <tr>
+  <tr scope="row">
     <td><h1>RPI 1<h1></td>
     <td><h2 id=rpi1_h>yes<h2></td>
     <td><h2 id=rpi1_w>yo!<h2></td>
@@ -30,9 +30,10 @@
       var conn = new SockJS('http://172.26.56.122:9091/push');
       conn.onmessage = function(e) {
         console.log('Got', e.data);
-        var json = JSON.stringify(eval("(" + e.data+ ")"));
-        id = json.type
-        document.getElementById(id).innerHTML = json.data
+        var json = JSON.parse(e.data);
+        id = json["type"];
+        console.log('id is', id);
+        document.getElementById(id).innerHTML = json.data;
       }
     });
 </script>

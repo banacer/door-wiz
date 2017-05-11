@@ -67,8 +67,11 @@ class BrokerConnection(sockjs.tornado.SockJSConnection):
     def on_walk(self, unused_channel, basic_deliver, properties, body):
         for c in self.clients:
             msg_received = json.loads(body)
-            msg_received['type'] = 'walk'
-            msg_to_send = json.dumps(msg_received)
+            rpi_id = 'rpi' + msg_received['door'][1]+'_w'
+            msg = {}
+            msg['type'] = rpi_id
+            msg['data'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            msg_to_send = json.dumps(msg)
             c.send(msg_to_send)
 
 

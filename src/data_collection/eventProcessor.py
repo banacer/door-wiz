@@ -74,4 +74,3 @@ if __name__ == '__main__':
     mongo_port = 27017#parser.port
     collection_name = 'door_data'
     run(mongo_ip, mongo_port, collection_name)
-
